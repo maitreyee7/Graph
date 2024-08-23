@@ -1,0 +1,33 @@
+class Solution {
+  public:
+    int minimumMultiplications(vector<int>& arr, int start, int end) {
+        int mod= 1e5;
+       queue< pair<int,int> >q;
+        q.push({0,start});
+        vector<int>dist(1e5, 1e9);
+        dist[start]=0;
+        while(!q.empty()){
+            auto it= q.front();
+            int step= it.first;
+            int num= it.second;
+             q.pop();
+         
+            if(num==end){
+                return step;
+            }
+           
+            for(int i=0;i<arr.size();i++){
+                int newnum= (num * arr[i])% mod;
+                if(dist[newnum] > step+1){
+                    dist[newnum] = step+1;
+                    q.push({step+1, newnum});
+                    
+                }
+            }
+        }
+        if(dist[end]==1e9){
+            return -1;
+        }
+        return dist[end];
+    }
+};
