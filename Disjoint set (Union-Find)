@@ -1,0 +1,20 @@
+int find(int A[],int X)
+{
+       if(X == A[X]){
+           return X;
+       }
+       
+       return A[X]= find(A, A[X]);
+       //return  parent[X];
+}
+void unionSet(int A[],int X,int Z)
+{
+	int pu= find(A,X);
+	int pv= find(A,Z);
+	if(pu==pv){
+	    return;
+	}
+    else{
+        A[pu]= pv;
+    }
+}
