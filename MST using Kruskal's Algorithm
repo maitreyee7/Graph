@@ -1,0 +1,68 @@
+class DisjointSet{
+    vector<int> parent, size;
+    public:
+    DisjointSet(int n){
+        parent.resize(n+1);
+        for(int i=0;i<n+1;i++){
+            parent[i]=i;
+        }
+        size.resize(n+1,1);
+    }
+    int findUltimateParent( int a){
+        if(a==parent[a]){
+            return a;
+        }
+        return parent[a]=  findUltimateParent( parent[a]);
+        
+    }
+    
+    void unionBySize(int a ,int b){
+        int pu= findUltimateParent(a);
+        int pv= findUltimateParent(b);
+        if(pu==pv){
+            return;
+        }
+        if(size[pu]>=size[pv]){
+            parent[pv]=pu;
+            size[pu]+=size[pv];
+        }
+        else{
+            parent[pu]=pv;
+            size[pv]+=size[pu];
+        }
+    }
+};
+
+class Solution
+{
+	public:
+	
+    int spanningTree(int V, vector<vector<int>> adj[])
+    {
+        int sum=0;
+        vector<pair<int,pair<int,int>>> edges;
+        for(int i=0;i<V;i++){
+            
+            for(auto it: adj[i]){
+            edges.push_back({it[1], {i,it[0]}});
+            }
+        }
+        DisjointSet ds(V);
+        sort(edges.begin(), edges.end());
+        for(auto i:edges){
+            int wt= i.first;
+            int node= i.second.first;
+            int adjnode= i.second.second;
+            
+            if(ds.findUltimateParent(node) != ds.findUltimateParent(adjnode)){
+                sum+=wt;
+                ds.unionBySize(node,adjnode);
+            }
+            
+            
+        }
+        return sum;
+        
+    }
+    
+};
