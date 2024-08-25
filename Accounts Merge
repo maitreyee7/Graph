@@ -1,0 +1,82 @@
+class DisjointSet{
+    vector<int> parent, size;
+    public:
+    DisjointSet(int n){
+        parent.resize(n+1);
+        for(int i=0;i<n+1;i++){
+            parent[i]=i;
+        }
+        size.resize(n+1,1);
+    }
+    int findUltimateParent( int a){
+        if(a==parent[a]){
+            return a;
+        }
+        return parent[a]=  findUltimateParent( parent[a]);
+        
+    }
+    
+    void unionBySize(int a ,int b){
+        int pu= findUltimateParent(a);
+        int pv= findUltimateParent(b);
+        if(pu==pv){
+            return;
+        }
+        if(size[pu]>=size[pv]){
+            parent[pv]=pu;
+            size[pu]+=size[pv];
+        }
+        else{
+            parent[pu]=pv;
+            size[pv]+=size[pu];
+        }
+    }
+};
+
+class Solution {
+public:
+    vector<vector<string>> accountsMerge(vector<vector<string>>& accounts) {
+
+        vector<vector<string>> ans;
+
+        map<int,string>name;
+        for(int i=0;i<accounts.size();i++){
+            name[i]= accounts[i][0];
+        }
+
+        map < string, int> acc;
+
+        DisjointSet ds(accounts.size());
+        for(int i=0;i<accounts.size();i++){
+            for(int j=1;j<accounts[i].size();j++ ){
+                string s= accounts[i][j];
+                if(acc.find(s)==acc.end()){
+                    acc[s]= i;
+                }
+                else{
+                     ds.unionBySize(i,  acc[accounts[i][j]]);
+                }
+            }
+        }
+        vector<string> merge[accounts.size()];
+        for(auto it:acc){
+            string s=it.first;
+            int node= it.second;
+            int a = ds.findUltimateParent(node);
+            merge[a].push_back(s);
+        }
+       for(int i=0;i<accounts.size();i++){
+        if(merge[i].size()==0) continue;
+        string s= name[i];
+        vector<string> vec= merge[i];
+        sort(vec.begin(), vec.end());
+        vector<string>v1;
+        v1.push_back(s);
+        for(auto it: vec){
+            v1.push_back(it);
+        }
+        ans.push_back(v1);
+       }
+       return ans;
+    }
+};
