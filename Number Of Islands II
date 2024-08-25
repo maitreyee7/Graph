@@ -1,0 +1,73 @@
+class DisjointSet{
+    vector<int> parent, size;
+    public:
+    DisjointSet(int n){
+        parent.resize(n+1);
+        for(int i=0;i<n+1;i++){
+            parent[i]=i;
+        }
+        size.resize(n+1,1);
+    }
+    int findUltimateParent( int a){
+        if(a==parent[a]){
+            return a;
+        }
+        return parent[a]=  findUltimateParent( parent[a]);
+        
+    }
+    
+    void unionBySize(int a ,int b){
+        int pu= findUltimateParent(a);
+        int pv= findUltimateParent(b);
+        if(pu==pv){
+            return;
+        }
+        if(size[pu]>=size[pv]){
+            parent[pv]=pu;
+            size[pu]+=size[pv];
+        }
+        else{
+            parent[pu]=pv;
+            size[pv]+=size[pu];
+        }
+    }
+};
+class Solution {
+  public:
+    
+  
+    vector<int> numOfIslands(int n, int m, vector<vector<int>> &operators) {
+        vector<int> ans;
+        int cnt=0;
+        int s= n*m;
+       vector<vector<int>> vis(n,vector<int>(m,0));
+       DisjointSet ds(s);
+       int dr[]={-1,0,1,0};
+       int dc[]={0,1,0,-1};
+       for(auto it: operators){
+           int a= it[0];
+           int b= it[1];
+           if(vis[a][b]==1){
+               ans.push_back(cnt);
+               continue;
+           }
+           vis[a][b]=1;
+           cnt++;
+           
+           for(int i=0;i<4;i++){
+               int nr= a+dr[i];
+               int nc= b+dc[i];
+               if(nr>=0 && nr<n && nc>=0 && nc<m && vis[nr][nc]==1){
+                   int node= a* m + b;
+                   int adjnode= nr* m + nc;
+                   if(ds.findUltimateParent(node) !=ds.findUltimateParent(adjnode)){
+                       ds.unionBySize(node,adjnode);
+                       cnt--;
+                   }
+               }
+           }
+           ans.push_back(cnt);
+       }
+       return ans;
+    }
+};
